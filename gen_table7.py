@@ -84,7 +84,7 @@ def get_command_output(command):
 	proc.stdout.close()
 	return output
 
-def set_NVCC_COMMAND(CTA_STYLE=-1, MAX_REG=-1):
+def set_NVCC_COMMAND(MAX_REG=64):
 	global NVCC_COMMAND
 	
 	NVCC_COMMAND = NVCC_PATH + " -ccbin " + CXX_COMPILER + " "
@@ -98,16 +98,16 @@ def set_NVCC_COMMAND(CTA_STYLE=-1, MAX_REG=-1):
 	compute_capability = output[0]
 	num_of_sm = output[1]
 
-	if CTA_STYLE == -1:
+	if MAX_REG == 64:	
 		NVCC_COMMAND += " -rdc=true -DNUM_CTA=" + str(int(num_of_sm)*2) + " -DCTA_SIZE=512 -gencode arch=compute_" + compute_capability + ",code=sm_" + compute_capability
-	else:
+	elif MAX_REG == 512:
+		CTA_STYLE = (int(int(num_of_sm)/2), int(512/2))
 		NVCC_COMMAND += " -rdc=true -DNUM_CTA=" + str(CTA_STYLE[0]) + " -DCTA_SIZE=" + str(CTA_STYLE[1]) + " -gencode arch=compute_" + compute_capability + ",code=sm_" + compute_capability
-
-	if MAX_REG == -1:
-		NVCC_COMMAND += " -std=c++11 -O3 -I " + DIR_PATH+"/graphit" + "/src/runtime_lib/ -Xcompiler \"-w\" -Wno-deprecated-gpu-targets --use_fast_math -Xptxas \" -dlcm=ca --maxrregcount=64\" "
 	else:
-		NVCC_COMMAND += " -std=c++11 -O3 -I " + DIR_PATH+"/graphit" + "/src/runtime_lib/ -Xcompiler \"-w\" -Wno-deprecated-gpu-targets --use_fast_math -Xptxas \" -dlcm=ca --maxrregcount=" + str(MAX_REG) + "\" "
-	# print(NVCC_COMMAND)
+		print("Invalid MAX_REG configuration, not supported\n")
+		exit(-1)
+
+	NVCC_COMMAND += " -std=c++11 -O3 -I " + DIR_PATH+"/graphit" + "/src/runtime_lib/ -Xcompiler \"-w\" -Wno-deprecated-gpu-targets --use_fast_math -Xptxas \" -dlcm=ca --maxrregcount=" + str(MAX_REG) + "\" "
 
 
 def compile_application(gtfile, binname):
@@ -119,7 +119,7 @@ def compile_application(gtfile, binname):
 
 def run_sanity_check():
 	compile_application("simple_graph_load.gt", "load")
-	print(get_command_output(GPU_PREFIX+"./load " + RCA))
+	get_command_output(GPU_PREFIX+"./load " + RCA)
 
 
 def compile_and_run(gtfile, binname, run_args, outputf):
@@ -167,22 +167,127 @@ def run_ds():
 	for i, (name, graph) in enumerate(GRAPH_SOCIAL):
 		compile_and_run(DS_SOCIAL, "ds_social", graph + " 0 " + str(delta[name]), "ds_" + name + ".out")
 		print(str(i+1) + "/" + str(len(GRAPH_ALL)))
-	set_NVCC_COMMAND((40, 256), 512)
+
+	set_NVCC_COMMAND(512)
 	for i, (name, graph) in enumerate(GRAPH_ROAD):
 		compile_and_run(DS_ROAD, "ds_road", graph + " 0 " + str(delta[name]), "ds_" + name + ".out")
 		print(str(i+1+len(GRAPH_SOCIAL)) + "/" + str(len(GRAPH_ALL)))
 		
+def run_bc():
+	threshold = {}
+	threshold["orkut"] = 0.12
+	threshold["livejournal"] = 0.015
+	threshold["twitter"] = 0.03
+	threshold["sinaweibo"] = 0.03
+	threshold["hollywood"] = 0.03
+	threshold["indochina"] = 0.03
 	
+	print ("Running eval for Betweenness Centrality")	
+	BC_SOCIAL = "bc_social.gt"
+	BC_ROAD = "bc_road.gt"
+	set_NVCC_COMMAND()
+	for i, (name, graph) in enumerate(GRAPH_SOCIAL):
+		compile_and_run(BC_SOCIAL, "bc_social", graph + " 0 " + str(threshold[name]), "bc_" + name + ".out")
+		print(str(i+1) + "/" + str(len(GRAPH_ALL)))
+	set_NVCC_COMMAND(512)
+	for i, (name, graph) in enumerate(GRAPH_ROAD):
+		compile_and_run(BC_ROAD, "bc_road", graph + " 0", "bc_" + name + ".out")
+		print(str(i+1+len(GRAPH_SOCIAL)) + "/" + str(len(GRAPH_ALL)))
+	
+
+def run_bfs():
+	threshold = {}
+	threshold["orkut"] = 0.12
+	threshold["livejournal"] = 0.015
+	threshold["twitter"] = 0.03
+	threshold["sinaweibo"] = 0.03
+	threshold["hollywood"] = 0.03
+	threshold["indochina"] = 0.03
+	
+	print ("Running eval for Breadth First Search")	
+	BFS_SOCIAL = "bfs_social.gt"
+	BFS_ROAD = "bfs_road.gt"
+	set_NVCC_COMMAND()
+	for i, (name, graph) in enumerate(GRAPH_SOCIAL):
+		compile_and_run(BFS_SOCIAL, "bfs_social", graph + " 0 " + str(threshold[name]), "bfs_" + name + ".out")
+		print(str(i+1) + "/" + str(len(GRAPH_ALL)))
+	set_NVCC_COMMAND(512)
+	for i, (name, graph) in enumerate(GRAPH_ROAD):
+		compile_and_run(BFS_ROAD, "bfs_road", graph + " 0", "bfs_" + name + ".out")
+		print(str(i+1+len(GRAPH_SOCIAL)) + "/" + str(len(GRAPH_ALL)))
+
+
+def read_execution_time(filename):
+	try:
+		f = open(SCRATCH_PATH + "/" + filename, "r")	
+		values = f.read().strip().split("\n")
+		values = [float(val) for val in values]
+		min_val = min(values)
+		min_val = int(min_val * 100000) / 100.0
+		return min_val
+	except:
+		return -1
+   
 
 def run_tests():
 	# get the GPU properties first
 	set_NVCC_COMMAND()
-	find_dataset_files()
 	run_sanity_check()
-	# run_pr()
-	# run_cc()
+	run_pr()
+	run_cc()
 	run_ds()
+	run_bc()
+	run_bfs()
+
+
+def print_cell(f, val):
+	spaces = 9 - len(str(val))
+	f.write(" " * spaces + str(val) + " |")
+
+def gen_table7():
+	short_names = {}
+	short_names["orkut"] = "OK"
+	short_names["twitter"] = "TW"
+	short_names["livejournal"] = "LJ"
+	short_names["sinaweibo"] = "SW"
+	short_names["hollywood"] = "HW"
+	short_names["indochina"] = "IC"
+	short_names["rusa"] = "RU"
+	short_names["rca"] = "RN"
+	short_names["rcentral"] = "RC"
+
+	filepath = SCRATCH_PATH + "/table7.txt"
+	f = open(filepath, "w")
 	
+	f.write("-" * 67)
+	f.write("\n")
+	f.write("|")
+	print_cell(f, "Graph")
+	print_cell(f, "PR")
+	print_cell(f, "CC")
+	print_cell(f, "BFS")
+	print_cell(f, "BC")
+	print_cell(f, "SSSP")
+	f.write("\n")
+	f.write("-" * 67)
+	f.write("\n")
+	
+	for graph, _  in GRAPH_ALL:
+		f.write("|")
+		print_cell(f, short_names[graph])
+		for app in ["pr", "cc", "bfs", "bc", "ds"]:
+			fname = app + "_" + graph + ".out"
+			val = read_execution_time(fname)
+			print_cell(f, val)
+		f.write("\n")
+	
+	f.write("-" * 67)
+	f.write("\n")
+	
+	f.close()
+	print(open(filepath, "r").read())
+	print("# This table is generated at: ", filepath)
+
 	
 def main():
 	global SCRATCH_PATH
@@ -195,17 +300,17 @@ def main():
 	global GPU_PREFIX
 
 	print("Starting artifact evaluation in directory: ", DIR_PATH)
-	SCRATCH_PATH = read_default_path("Please choose a scratch directory to use", DIR_PATH + "/scratch")
+	SCRATCH_PATH = read_default_path("Please choose a output directory to use", DIR_PATH + "/table7_outputs")
 	GRAPHIT_BUILD_PATH = read_default_path("Please choose GraphIt build directory", DIR_PATH + "/graphit/build")
 	DATASET_PATH = read_default_path("Please choose dataset path", DIR_PATH + "/dataset")
-	APPS_DIRECTORY = DIR_PATH+"/apps"
+	APPS_DIRECTORY = DIR_PATH+"/table7_inputs"
 	NVCC_PATH = read_default_path("Please choose NVCC path", "/usr/local/cuda/bin/nvcc")
 	CXX_COMPILER = read_default_path("Please choose CXX_COMPILER", "/usr/bin/g++")
-	
+
 	if os.path.exists(SCRATCH_PATH):
 		os.system("rm -rf " + SCRATCH_PATH)
 	os.makedirs(SCRATCH_PATH)
-	
+
 	os.chdir(SCRATCH_PATH)
 
 
@@ -213,9 +318,10 @@ def main():
 	GPU_ID = read_default_path("Choose GPU id to use (0-" + str(total_devices-1) + ")", str(0))
 	GPU_PREFIX="CUDA_VISIBLE_DEVICES="+GPU_ID+" "
 	
-	# print(SCRATCH_PATH, GRAPHIT_BUILD_PATH, DATASET_PATH, GPU_ID, NVCC_PATH)
 
+	find_dataset_files()
 	run_tests()
+	gen_table7()
 
 
 

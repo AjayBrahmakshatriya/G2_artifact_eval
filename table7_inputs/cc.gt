@@ -47,7 +47,6 @@ func main()
         end
         var elapsed_time : float = stopTimer();
 	delete frontier;
-        print "elapsed time: ";
         print elapsed_time;
     end
 end

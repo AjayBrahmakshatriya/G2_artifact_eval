@@ -1,4 +1,5 @@
-scratch/*
+fig3_outputs/*
+table7_outputs/*
 dataset/*
 !dataset/Makefile
 !dataset/local.sh
