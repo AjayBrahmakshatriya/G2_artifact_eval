@@ -1,0 +1,4 @@
+scratch/*
+dataset/*
+!dataset/Makefile
+!dataset/local.sh
