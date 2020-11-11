@@ -9,7 +9,6 @@ const contrib : vector{Vertex}(float) = 0.0;
 const error : vector{Vertex}(float) = 0.0;
 const damp : float = 0.85;
 const beta_score : float = (1.0 - damp) / vertices.size();
-const update: vector[1](int) = 0;
 
 func computeContrib(v : Vertex)
     contrib[v] = old_rank[v] / out_degree[v];
@@ -23,9 +22,6 @@ func updateVertex(v : Vertex)
     var old_score : float = old_rank[v];
     new_rank[v] = beta_score + damp*(new_rank[v]);
     error[v] = fabs(new_rank[v] - old_rank[v]);
-    if error[v] >= old_rank[v] * 0.01
-        update[0] += 1;
-    end
     old_rank[v] = new_rank[v];
     new_rank[v] = 0.0;
     
@@ -44,16 +40,13 @@ func main()
     for trail in 0:10
     	startTimer();
         vertices.apply(reset);
-	update[0] = 1;
-    	while update[0] > 0
+	for round in 0:20
     	    vertices.apply(computeContrib);
             #s1# edges.apply(updateEdge);
-	    update[0] = 0;
-            vertices.apply(updateVertex);
-	     
+            vertices.apply(updateVertex);	     
     	end
     	var elapsed_time : float = stopTimer();
-    	print elapsed_time;
+    	print elapsed_time/20.0;
     end
 end
 
