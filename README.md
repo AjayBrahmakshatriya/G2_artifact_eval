@@ -38,8 +38,8 @@ We will start by cloning this repository on the evaluation system using the foll
 
 If you have already cloned this repository without the `--recursive` command you can get the submodules by running the following commands. Otherwise you can directly proceed to Building G2.
 
-   git submodule init
-   git submodule update
+    git submodule init
+    git submodule update
    
 ### Building G2
 Start by navigating to the `G2_artifact_eval` directory. We will first build the G2 compiler by running the following commands from the repo's top level directory - 
@@ -118,7 +118,7 @@ Again, like Part 1 the program will prompt for various options like path to the 
 
 Once you enter all the options, the experiments will run one after the other. The program will print which application it is currently running and how many graphs it is done evaluating on. Sit back because running all the applications can take a while (upwards of 30 mins).
 
-If the program completes execution without any errors, all the experiments are done and you can view the final results in the output directory. If you chose the default option, the output file should be under `table7_outputs/table7.txt`. You can view this in your favorite text editor or simply `cat` it to the terminal. 
+If the program completes execution without any errors, all the experiments are done and you can view the final results in the output directory. If you chose the default option, the output file should be under `table7_outputs/table7.txt`. The program should also print the table on successful completion. 
 
 
 ## Evaluating related works
