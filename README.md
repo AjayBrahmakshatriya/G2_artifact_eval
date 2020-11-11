@@ -48,7 +48,7 @@ Start by navigating to the `G2_artifact_eval` directory. We will first build the
     mkdir build
     cd build
     cmake ..
-    make
+    make -j$(nproc)
     
 If no errors are reported, the G2 compiler is built correctly and you can navigate back to the repository's top level directory and proceed to "Obtaining the datasets"
 
