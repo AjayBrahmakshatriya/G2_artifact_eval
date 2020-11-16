@@ -57,7 +57,7 @@ The datasets are only requried for Part 2. So if you are planning to not run Par
 
 There are two ways of obtaining the datasets. If you are running this artifact evaluation on the system we have provided access to, you can quickly fetch all the data set files by running the following commands in the top level directory - 
 
-    cd datasets
+    cd dataset
     make local
     
 If everything succeeds, the dataset should be soft-linked into this directory and you can verify that by running the `ls` command. You can now proceed to the next step. If the command reports the error 
