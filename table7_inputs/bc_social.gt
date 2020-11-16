@@ -4,7 +4,7 @@ element Edge end
 const edges : edgeset{Edge}(Vertex,Vertex) = load (argv[1]);
 const vertices : vertexset{Vertex} = edges.getVertices();
 
-const num_paths : vector{Vertex}(int) = 0;
+const num_paths : vector{Vertex}(double) = 0;
 const dependences : vector{Vertex}(float) = 0;
 const visited : vector{Vertex}(bool) = false;
 
@@ -44,6 +44,7 @@ end
 func reset(v : Vertex)
     dependences[v] = 0;
     num_paths[v] = 0;
+    visited[v] = false;
 end
 
 
