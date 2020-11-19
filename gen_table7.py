@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 DIR_PATH=os.path.dirname(os.path.realpath(__file__)).rstrip("/")
 
 SCRATCH_PATH=""
@@ -49,9 +50,14 @@ def find_dataset_files():
 	RUSA=DATASET_PATH+"/road_usa.weighted.mtx"
 	RCA=DATASET_PATH+"/roadNet-CA.weighted.mtx"
 	RCENTRAL=DATASET_PATH+"/road_central.weighted.mtx"
-	
-	GRAPH_SOCIAL=[('orkut', ORKUT), ('twitter', TWITTER), ('livejournal', LIVEJOURNAL), ('sinaweibo', SINAWEIBO), ('indochina', INDOCHINA), ('hollywood', HOLLYWOOD)]
-	GRAPH_ROAD=[('rca', RCA), ('rusa', RUSA), ('rcentral', RCENTRAL)]
+
+	if sys.argv[1] == "small":	
+		GRAPH_SOCIAL=[('livejournal', LIVEJOURNAL)]
+		GRAPH_ROAD=[('rca', RCA)]
+	else:
+		GRAPH_SOCIAL=[('orkut', ORKUT), ('twitter', TWITTER), ('livejournal', LIVEJOURNAL), ('sinaweibo', SINAWEIBO), ('indochina', INDOCHINA), ('hollywood', HOLLYWOOD)]
+		GRAPH_ROAD=[('rca', RCA), ('rusa', RUSA), ('rcentral', RCENTRAL)]
+
 	GRAPH_ALL = GRAPH_SOCIAL + GRAPH_ROAD
 
 	
