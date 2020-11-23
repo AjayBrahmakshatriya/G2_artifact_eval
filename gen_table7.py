@@ -51,7 +51,7 @@ def find_dataset_files():
 	RCA=DATASET_PATH+"/roadNet-CA.weighted.mtx"
 	RCENTRAL=DATASET_PATH+"/road_central.weighted.mtx"
 
-	if sys.argv[1] == "small":	
+	if len(sys.argv) >= 2 and sys.argv[1] == "small":	
 		GRAPH_SOCIAL=[('livejournal', LIVEJOURNAL)]
 		GRAPH_ROAD=[('rca', RCA)]
 	else:
