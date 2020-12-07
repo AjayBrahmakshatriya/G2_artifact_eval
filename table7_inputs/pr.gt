@@ -55,7 +55,6 @@ schedule:
 	SimpleGPUSchedule s1;
 	s1.configDirection(PULL);
 	s1.configLoadBalance(EDGE_ONLY, BLOCKED, 0x42000);
-	s1.configLoadBalance(EDGE_ONLY);
 	
 	program->applyGPUSchedule("s1", s1);
 

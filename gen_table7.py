@@ -161,7 +161,7 @@ def run_ds():
 	delta["twitter"] = 15
 	delta["sinaweibo"] = 15
 	delta["hollywood"] = 15
-	delta["indochina"] = 20
+	delta["indochina"] = 10000
 	delta["rusa"] = 80000
 	delta["rcentral"] = 30000
 	delta["rca"] = 20000
@@ -181,12 +181,12 @@ def run_ds():
 		
 def run_bc():
 	threshold = {}
-	threshold["orkut"] = 0.12
-	threshold["livejournal"] = 0.015
-	threshold["twitter"] = 0.03
-	threshold["sinaweibo"] = 0.03
-	threshold["hollywood"] = 0.03
-	threshold["indochina"] = 0.03
+	threshold["orkut"] = 0.010
+	threshold["livejournal"] = 0.006
+	threshold["twitter"] = 0.023
+	threshold["sinaweibo"] = 0.008
+	threshold["hollywood"] = 0.026
+	threshold["indochina"] = 0.99
 	
 	print ("Running eval for Betweenness Centrality")	
 	BC_SOCIAL = "bc_social.gt"
@@ -203,12 +203,12 @@ def run_bc():
 
 def run_bfs():
 	threshold = {}
-	threshold["orkut"] = 0.12
-	threshold["livejournal"] = 0.015
-	threshold["twitter"] = 0.03
-	threshold["sinaweibo"] = 0.03
-	threshold["hollywood"] = 0.03
-	threshold["indochina"] = 0.03
+	threshold["orkut"] = 0.010
+	threshold["livejournal"] = 0.006
+	threshold["twitter"] = 0.023
+	threshold["sinaweibo"] = 0.008
+	threshold["hollywood"] = 0.026
+	threshold["indochina"] = 0.99
 	
 	print ("Running eval for Breadth First Search")	
 	BFS_SOCIAL = "bfs_social.gt"

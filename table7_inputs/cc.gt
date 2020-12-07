@@ -55,7 +55,7 @@ end
 % specify schedules here or use a separate schedule file
 schedule:
 	SimpleGPUSchedule s1;
-	s1.configLoadBalance(TWC);
+	s1.configLoadBalance(CM);
 	s1.configDeduplication(ENABLED);
 	s1.configFrontierCreation(UNFUSED_BITMAP);
 	program->applyGPUSchedule("s1", s1);

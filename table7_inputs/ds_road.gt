@@ -39,7 +39,7 @@ end
 
 schedule:
 	SimpleGPUSchedule s1;
-	s1.configLoadBalance(TWCE);
+	s1.configLoadBalance(CM);
 	s1.configFrontierCreation(FUSED);
 	s1.configDelta("argv[3]");
 	program->applyGPUSchedule("s0:s1", s1);
